@@ -1,0 +1,3 @@
+mvn compile package
+echo '[RUNNING]---------------------------------------------------------------------'
+cd target && time java -cp twitter-0.1.jar twitter.analysis.Test
