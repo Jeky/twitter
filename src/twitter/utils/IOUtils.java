@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 public final class IOUtils {
 
 	public static void saveObject(Object o, String filename) {
+		Logger.info("Saving Object to " + filename);
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(new FileOutputStream(new File(filename)));
@@ -30,6 +31,7 @@ public final class IOUtils {
 	}
 	
 	public static Object loadObject(String filename){
+		Logger.info("Loading Object from " + filename);
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(new FileInputStream(new File(filename)));
