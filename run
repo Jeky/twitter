@@ -1,3 +1,3 @@
 mvn compile package
 echo '[RUNNING]---------------------------------------------------------------------'
-cd target && time java -XX:-UseGCOverheadLimit -XX:+UseParallelGC -Xmx30g -Xms2g -cp weka.jar:twitter-0.1.jar twitter.analysis.Test
+cd target && time java -XX:-UseGCOverheadLimit -XX:+UseParallelGC -Xmx30g -Xms2g -cp "twitter-0.1.jar" twitter.analysis.Test

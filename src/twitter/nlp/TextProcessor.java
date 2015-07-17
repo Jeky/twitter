@@ -15,10 +15,10 @@ public class TextProcessor {
 			return words;
 		} else {
 			List<String> grams = new ArrayList<>();
-			if(words.size() < n){
+			if (words.size() < n) {
 				return grams;
 			}
-			
+
 			for (int i = 0; i < words.size() - 1; i++) {
 				StringBuilder buf = new StringBuilder();
 				for (int j = 0; j < n - 1; j++) {
@@ -32,10 +32,14 @@ public class TextProcessor {
 	}
 
 	public static void countGramsInTweet(Tweet t, Counter<String> counter, int n) {
-		List<String> grams = toGram(stem(filterStopwords(tokenize(t.getText()))), n);
+		List<String> grams = tweetToGram(t, n);
 		for (String g : grams) {
 			counter.put(g);
 		}
+	}
+
+	public static List<String> tweetToGram(Tweet t, int n) {
+		return toGram(stem(filterStopwords(tokenize(t.getText()))), n);
 	}
 
 	public static List<String> tokenize(String text) {

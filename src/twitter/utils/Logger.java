@@ -1,6 +1,7 @@
 package twitter.utils;
 
 import java.io.PrintStream;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,6 +28,20 @@ public class Logger {
 		System.exit(-1);
 	}
 
+	public static void printMemUsage() {
+		Runtime runtime = Runtime.getRuntime();
+		NumberFormat format = NumberFormat.getInstance();
+
+		long maxMemory = runtime.maxMemory();
+		long allocatedMemory = runtime.totalMemory();
+		long freeMemory = runtime.freeMemory();
+
+		info("Free Memory: " + format.format(freeMemory / 1024));
+		info("Allocated Memory: " + format.format(allocatedMemory / 1024));
+		info("Max Memory: " + format.format(maxMemory / 1024));
+		info("Total Free Memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024));
+	}
+
 	public static void setOutput(PrintStream os) {
 		out = os;
 	}
@@ -37,6 +52,5 @@ public class Logger {
 
 	private static boolean debug = true;
 	private static PrintStream out = System.out;
-	private static final SimpleDateFormat FORMAT = new SimpleDateFormat(
-			"MM-dd-yyyy HH:mm:ss");
+	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 }
