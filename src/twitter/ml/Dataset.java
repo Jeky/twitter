@@ -5,12 +5,17 @@ import java.util.*;
 
 public class Dataset implements Serializable, Iterable<Instance> {
 
+	public Dataset(){
+		instances = new ArrayList<>();
+	}
+	
 	public Instance getInstance(int index) {
 		return instances.get(index);
 	}
 
 	public void addInstance(Instance instance) {
 		instances.add(instance);
+		instance.setDataset(this);
 	}
 
 	public String getClassLabel() {

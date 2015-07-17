@@ -18,12 +18,21 @@ public class SparseInstance implements Instance {
 
 	@Override
 	public double getValue(String attribute) {
-		return values.get(attribute);
+		if (hasAttribute(attribute)) {
+			return values.get(attribute);
+		} else {
+			return 0.0;
+		}
 	}
 
 	@Override
 	public void setDataset(Dataset dataset) {
 		this.dataset = dataset;
+	}
+
+	@Override
+	public Dataset getDataset() {
+		return dataset;
 	}
 
 	@Override
@@ -35,7 +44,12 @@ public class SparseInstance implements Instance {
 	public void setClassValue(double value) {
 		values.put(dataset.getClassLabel(), value);
 	}
-	
+
+	@Override
+	public boolean hasAttribute(String attribute) {
+		return values.containsKey(attribute);
+	}
+
 	@Override
 	public Iterator<Entry<String, Double>> iterator() {
 		return values.entrySet().iterator();
@@ -44,4 +58,5 @@ public class SparseInstance implements Instance {
 	private Dataset dataset;
 	private Map<String, Double> values;
 	private static final long serialVersionUID = -3515379384138036736L;
+
 }

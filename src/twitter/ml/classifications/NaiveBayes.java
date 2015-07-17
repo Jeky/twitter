@@ -8,6 +8,7 @@ import java.util.Set;
 
 import twitter.ml.Dataset;
 import twitter.ml.Instance;
+import twitter.utils.Utils;
 
 public class NaiveBayes implements Classifier {
 
@@ -25,15 +26,15 @@ public class NaiveBayes implements Classifier {
 				clsFeatureProb.put(cls, new HashMap<String, Double>());
 			}
 
-			add(clsProb, cls, 1.0);
+			Utils.mapAdd(clsProb, cls, 1.0);
 
 			for (Entry<String, Double> features : instance) {
 				String n = features.getKey();
 				double v = features.getValue();
 
 				if (!n.equals(dataset.getClassLabel())) {
-					add(clsFeatureProb.get(cls), n, v);
-					add(clsWordCount, cls, v);
+					Utils.mapAdd(clsFeatureProb.get(cls), n, v);
+					Utils.mapAdd(clsWordCount, cls, v);
 					featureSet.add(n);
 				}
 			}
@@ -70,10 +71,9 @@ public class NaiveBayes implements Classifier {
 
 		for (Entry<Double, Map<String, Double>> e : clsFeatureProb.entrySet()) {
 			double thisCls = e.getKey();
-			Map<String, Double> features = e.getValue();
 			double thisProb = clsProb.get(thisCls);
 
-			for (Entry<String, Double> fe : features.entrySet()) {
+			for (Entry<String, Double> fe : instance) {
 				String n = fe.getKey();
 				double v = fe.getValue();
 
@@ -86,17 +86,9 @@ public class NaiveBayes implements Classifier {
 				cls = thisCls;
 				prob = thisProb;
 			}
-			System.out.println(thisCls + "\t" + prob);
+			System.out.println(thisCls + "\t" + thisProb);
 		}
 		return cls;
-	}
-
-	private <K> void add(Map<K, Double> map, K key, double v) {
-		if (!map.containsKey(key)) {
-			map.put(key, v);
-		} else {
-			map.put(key, map.get(key) + v);
-		}
 	}
 
 	private Map<Double, Double> clsProb;
