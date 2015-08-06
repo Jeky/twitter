@@ -8,16 +8,25 @@ import java.util.Set;
 
 import twitter.ml.Dataset;
 import twitter.ml.Instance;
+import twitter.utils.Logger;
 import twitter.utils.Utils;
 
 public class NaiveBayes implements Classifier {
 
-	@Override
-	public void train(Dataset dataset) {
+	public NaiveBayes() {
 		clsProb = new HashMap<>();
 		clsFeatureProb = new HashMap<>();
-		HashMap<Double, Double> clsWordCount = new HashMap<>();
+	}
 
+	@Override
+	public void reset() {
+		clsProb.clear();
+		clsFeatureProb.clear();
+	}
+
+	@Override
+	public void train(Dataset dataset) {
+		HashMap<Double, Double> clsWordCount = new HashMap<>();
 		Set<String> featureSet = new HashSet<>();
 
 		for (Instance instance : dataset) {
@@ -45,18 +54,20 @@ public class NaiveBayes implements Classifier {
 			double v = e.getValue();
 			clsProb.put(cls, Math.log(v / dataset.size()));
 		}
-
+		
+		int featureSize = featureSet.size();
 		for (Entry<Double, Map<String, Double>> e : clsFeatureProb.entrySet()) {
 			double cls = e.getKey();
 			Map<String, Double> featureProb = e.getValue();
 
 			for (String n : featureSet) {
 				double v = 0.0;
+				
 				if (featureProb.containsKey(n)) {
 					v = featureProb.get(n);
 				}
 
-				featureProb.put(n, Math.log((v + 1) / (clsWordCount.get(cls) + featureSet.size())));
+				featureProb.put(n, Math.log((v + 1) / (clsWordCount.get(cls) + featureSize)));
 			}
 		}
 	}
@@ -64,7 +75,7 @@ public class NaiveBayes implements Classifier {
 	@Override
 	public double classify(Instance instance) {
 		if (clsProb == null) {
-			throw new RuntimeException("Train Classifier First!");
+			Logger.error("Train Classifier First!");
 		}
 		double cls = 0.0;
 		double prob = -1;
@@ -86,7 +97,6 @@ public class NaiveBayes implements Classifier {
 				cls = thisCls;
 				prob = thisProb;
 			}
-			System.out.println(thisCls + "\t" + thisProb);
 		}
 		return cls;
 	}

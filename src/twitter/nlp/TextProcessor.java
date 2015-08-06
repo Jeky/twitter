@@ -483,6 +483,7 @@ public class TextProcessor {
 			add("ve");
 			add("very");
 			add("w");
+			add("wanna");
 			add("want");
 			add("wanted");
 			add("wanting");
@@ -510,9 +511,6 @@ public class TextProcessor {
 			add("with");
 			add("within");
 			add("without");
-			add("work");
-			add("worked");
-			add("working");
 			add("works");
 			add("would");
 			add("x");

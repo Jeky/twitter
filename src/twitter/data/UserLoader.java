@@ -174,9 +174,10 @@ public class UserLoader {
 						t.setHashtags(matcher.group(10).replace("\n", "").trim());
 						tweets.add(t);
 					} else {
-						Logger.error("No group found in:\n" + content);
+						//Logger.info("No group found in:\n" + content);
+						Logger.info("Error when parsing tweet");
 					}
-					buf.delete(0, buf.length() - 1);
+					buf.setLength(0);
 				}
 				start = !start;
 			} else {

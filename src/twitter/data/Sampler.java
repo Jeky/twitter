@@ -1,13 +1,13 @@
-package twitter.analysis;
+package twitter.data;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import twitter.data.User;
-import twitter.data.UserLoader;
 import twitter.utils.IOUtils;
 import twitter.utils.Logger;
 
@@ -15,10 +15,7 @@ public class Sampler {
 
 	public static final String SAMPLE_DATA_PATH = UserLoader.PATH + "sampled-normal-users.obj";
 
-	public static void sample() {
-		final Map<Long, User> allUsers = UserLoader.loadAllUsers();
-		final Map<Long, User> spammers = UserLoader.loadSpammers();
-
+	public static Map<Long, User> sample(final Map<Long, User> allUsers, final Map<Long, User> spammers) {
 		Sampler sampler = new Sampler(allUsers);
 		sampler.addFilter(new SampleFilter() {
 
@@ -36,10 +33,16 @@ public class Sampler {
 		});
 
 		Map<Long, User> sampledUsers = sampler.sample(spammers.size());
-		for (User u : sampledUsers.values()) {
-			u.setTweets(UserLoader.loadTweet(u.getId()));
+		try {
+			PrintWriter writer = new PrintWriter("sampled_ids.txt");
+			for(Long uid : sampledUsers.keySet()){
+				writer.println(uid);
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
-		IOUtils.saveObject(sampledUsers, SAMPLE_DATA_PATH);
+		return sampledUsers;
 	}
 
 	public static void fillSampledUsersOldDegree() {
@@ -60,7 +63,13 @@ public class Sampler {
 	}
 
 	public static Map<Long, User> loadSampledUsers() {
+		Logger.info("Loading Sampled Users...");
 		return (Map<Long, User>) IOUtils.loadObject(SAMPLE_DATA_PATH);
+	}
+	
+	public static Map<Long, User> loadSampledUsers(String path) {
+		Logger.info("Loading Sampled Users...");
+		return (Map<Long, User>) IOUtils.loadObject(path);
 	}
 
 	public Sampler(Map<Long, User> allUsers) {

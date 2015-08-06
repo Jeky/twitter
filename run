@@ -1,3 +1,4 @@
 mvn compile package
 echo '[RUNNING]---------------------------------------------------------------------'
-cd target && time java -XX:-UseGCOverheadLimit -XX:+UseParallelGC -Xmx30g -Xms2g -cp "twitter-0.1.jar" twitter.analysis.Test
+cd target
+time java -server -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=92 -XX:+UseCMSInitiatingOccupancyOnly -Xmx30g -Xms2g -cp "../lib/*:twitter-0.1.jar" twitter.analysis.Test

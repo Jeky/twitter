@@ -17,8 +17,8 @@
     </plugins>
   </build>
   <artifactId>twitter</artifactId>
-  <!--<dependencies>
-  	<dependency>
+  <dependencies>
+  <!--	<dependency>
 		<groupId>nz.ac.waikato.cms.weka</groupId>
 		<artifactId>weka-stable</artifactId>
 		<version>3.6.6</version>
@@ -37,5 +37,11 @@
 		<scope>system</scope>
 	    <systemPath>${project.basedir}/lib/tsne-0.0.2.jar</systemPath>
 	</dependency>
-  </dependencies>-->
+	-->
+	<dependency>
+    <groupId>de.ruedigermoeller</groupId>
+    <artifactId>fst</artifactId>
+    <version>2.34</version>
+</dependency>
+  </dependencies>
 </project>

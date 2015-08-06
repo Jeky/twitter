@@ -4,6 +4,9 @@ import java.io.PrintStream;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Logger {
 
@@ -28,6 +31,26 @@ public class Logger {
 		System.exit(-1);
 	}
 
+	public static void timeMethodStart(String name) {
+		if (!timeMap.containsKey(name)) {
+			timeMap.put(name, 0L);
+		}
+		timeMap.put(name, System.nanoTime() - timeMap.get(name));
+	}
+
+	public static void timeMethodEnd(String name) {
+		timeMap.put(name, System.nanoTime() - timeMap.get(name));
+	}
+
+	public static void showTimeProfile() {
+		StringBuilder builder = new StringBuilder();
+		for (Entry<String, Long> e : timeMap.entrySet()) {
+			double seconds = e.getValue() / 1000000000.0;
+			builder.append(e.getKey()).append(" : ").append(seconds).append(" sec").append("\n");
+		}
+		Logger.info("Time Profile:\n" + builder);
+	}
+
 	public static void printMemUsage() {
 		Runtime runtime = Runtime.getRuntime();
 		NumberFormat format = NumberFormat.getInstance();
@@ -50,6 +73,7 @@ public class Logger {
 		debug = d;
 	}
 
+	private static Map<String, Long> timeMap = new HashMap<>();
 	private static boolean debug = true;
 	private static PrintStream out = System.out;
 	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");

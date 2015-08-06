@@ -7,13 +7,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
+
 public final class IOUtils {
 
 	public static void saveObject(Object o, String filename) {
 		Logger.info("Saving Object to " + filename);
-		ObjectOutputStream oos = null;
+		FSTObjectOutput oos = null;
 		try {
-			oos = new ObjectOutputStream(new FileOutputStream(new File(filename)));
+			oos = new FSTObjectOutput(new FileOutputStream(new File(filename)));
 			oos.writeObject(o);
 		} catch (IOException e) {
 			Logger.error("Cannot find file: " + filename, e);
@@ -32,9 +35,9 @@ public final class IOUtils {
 	
 	public static Object loadObject(String filename){
 		Logger.info("Loading Object from " + filename);
-		ObjectInputStream ois = null;
+		FSTObjectInput ois = null;
 		try {
-			ois = new ObjectInputStream(new FileInputStream(new File(filename)));
+			ois = new FSTObjectInput(new FileInputStream(new File(filename)));
 			return ois.readObject();
 		} catch (IOException e) {
 			Logger.error("Cannot find file: " + filename, e);

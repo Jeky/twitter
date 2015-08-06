@@ -1,5 +1,8 @@
 package twitter.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -34,5 +37,31 @@ public class Utils {
 		builder.append(arr[arr.length - 1]);
 
 		return builder.toString();
+	}
+
+	public static void runShell(String command) {
+		Logger.info("Running Shell Command: " + command);
+		BufferedReader reader = null;
+		try {
+			Process p = Runtime.getRuntime().exec(command);
+			reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+			String line = "";
+			while ((line = reader.readLine()) != null) {
+				Logger.info(line);
+			}
+
+			p.waitFor();
+		} catch (Exception e) {
+			Logger.error("Error when executing shell command", e);
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					Logger.error("Error when closing reader", e);
+				}
+			}
+		}
 	}
 }

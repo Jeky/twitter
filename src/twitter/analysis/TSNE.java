@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import twitter.data.Sampler;
 import twitter.data.Tweet;
 import twitter.data.User;
 import twitter.data.UserLoader;
