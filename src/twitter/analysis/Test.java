@@ -1,11 +1,17 @@
 package twitter.analysis;
 
+import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import twitter.analysis.testors.BasicStatisticTestor;
 import twitter.analysis.testors.UserVectorClassificationTestor;
 import twitter.analysis.testors.Word2VecTestor;
 import twitter.data.NewDatasetLoader;
+import twitter.data.Sampler;
+import twitter.data.Tweet;
 import twitter.data.User;
+import twitter.data.UserLoader;
 import twitter.utils.Logger;
 
 public class Test {
@@ -14,11 +20,11 @@ public class Test {
 		try {
 			Map<Long, User> spammers = NewDatasetLoader.loadAllSuspendedUsers();
 			Map<Long, User> nonSpammers = NewDatasetLoader.loadSampledUsers();
-//			new TSNETestor(BiClassMutualInformation.class, 1, 10000).test(spammers, nonSpammers);
-//			new Word2VecTestor().test(spammers, nonSpammers);
-			new UserVectorClassificationTestor().test(spammers, nonSpammers);
+			
+			new BasicStatisticTestor().test(spammers, nonSpammers);
 		} catch (Exception e) {
 			Logger.error("Error in main thread", e);
 		}
 	}
+
 }

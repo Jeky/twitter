@@ -28,7 +28,7 @@ public class Sampler {
 
 			@Override
 			public boolean accept(User u) {
-				return UserLoader.loadTweet(u.getId()).size() != 0;
+				return UserLoader.loadTweet(u.getId()).size() >= 50;
 			}
 		});
 

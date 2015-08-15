@@ -43,7 +43,7 @@ public class NewDatasetLoader {
 	public static Map<Long, User> loadSampledUsers() {
 		Map<Long, User> sample = new HashMap<>();
 		final List<Long> ids = new LinkedList<>();
-		new FileLineReader<>(NewDatasetLoader.PATH + "sampled_ids.txt", new LineHandler<List<Long>>() {
+		new FileLineReader<>("sampled_ids.txt", new LineHandler<List<Long>>() {
 
 			@Override
 			public boolean readLine(int i, String line) {
@@ -72,7 +72,7 @@ public class NewDatasetLoader {
 
 		@Override
 		public List<Tweet> getTweets() {
-			return UserLoader.loadTweet(getId());
+			return UserLoader.loadTweet(getId()).subList(0, 55);
 		}
 
 		private static final long serialVersionUID = 4409050046556033948L;
