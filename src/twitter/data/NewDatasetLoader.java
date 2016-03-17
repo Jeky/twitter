@@ -3,7 +3,7 @@ package twitter.data;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,10 +17,13 @@ import twitter.utils.Logger;
 
 public class NewDatasetLoader {
 
-	public static final String PATH = UserLoader.PATH + "new_dataset/";
-	public static final String TWEET_PATH = PATH + "MissingId/Tweet/";
+	public static final String PATH = UserLoader.PATH + "ctweets-new-sample/";
+	public static final String TWEET_PATH = PATH + "Random/Tweet/";
 	public static final String SUSPENDED_USERS = PATH + "suspend.obj";
-	public static final String[] TWEET_NAMES = new String[] { "Havok.txt", "Phoenix.txt", "bishop.txt", "gambit.txt" };
+	public static final String[] TWEET_NAMES = new String[] { "bishop.txt" ,
+																				"Havok.txt",
+																				 "Phoenix.txt",
+																				 "gambit.txt"};
 	public static final Pattern TWEET_COLLECTION_START = Pattern.compile("###.+### (\\d+)]");
 	public static final Pattern TWEET_START = Pattern.compile("\\s*<entry>\\s*");
 	public static final Pattern TWEET_END = Pattern.compile("\\s*</entry>\\s*");
@@ -60,7 +63,7 @@ public class NewDatasetLoader {
 		for (Long id : ids) {
 			sample.put(id, new FakeUser(id));
 		}
-		
+
 		return sample;
 	}
 
@@ -72,7 +75,7 @@ public class NewDatasetLoader {
 
 		@Override
 		public List<Tweet> getTweets() {
-			return UserLoader.loadTweet(getId()).subList(0, 55);
+			return UserLoader.loadTweet(getId()).subList(0, 50);
 		}
 
 		private static final long serialVersionUID = 4409050046556033948L;
@@ -89,28 +92,41 @@ public class NewDatasetLoader {
 	 * @return fake users
 	 */
 	public static Map<Long, User> loadAllSuspendedUsers() {
-		if (!new File(SUSPENDED_USERS).exists()) {
-			Logger.info("Cannot find saved object. Collecting users...");
-			Map<Long, List<Tweet>> tweets = loadAllTweets();
-			Map<Long, User> users = new HashMap<>();
+		// if (!new File(SUSPENDED_USERS).exists()) {
+//		Logger.info("Cannot find saved object. Collecting users...");
+		Map<Long, List<Tweet>> tweets = loadAllTweets();
+		Map<Long, User> users = new HashMap<>();
 
-			for (Entry<Long, List<Tweet>> e : tweets.entrySet()) {
-				User u = new User();
-				u.setTweets(e.getValue());
-				users.put(e.getKey(), u);
+		for (Entry<Long, List<Tweet>> e : tweets.entrySet()) {
+			User u = new User();
+			if (USER_NAME_MAP.containsKey(e.getKey())) {
+				Set<String> usernames = USER_NAME_MAP.get(e.getKey());
+				if (usernames.size() > 1) {
+					u.setName(usernames.toString());
+				} else {
+					u.setName(usernames.iterator().next());
+				}
+			} else {
+				u.setName("");
 			}
-
-			IOUtils.saveObject(users, SUSPENDED_USERS);
-			return users;
-		} else {
-			return (Map<Long, User>) IOUtils.loadObject(SUSPENDED_USERS);
+			u.setId(e.getKey());
+			u.setTweets(e.getValue());
+			users.put(e.getKey(), u);
 		}
+
+		// IOUtils.saveObject(users, SUSPENDED_USERS);
+		return users;
+		// } else {
+		// return (Map<Long, User>) IOUtils.loadObject(SUSPENDED_USERS);
+		// }
 	}
 
 	private static void loadTweets(String filename, Map<Long, List<Tweet>> allTweets) {
 		Map<Long, List<Tweet>> tweets = new FileLineReader<>(TWEET_PATH + filename, new TweetXMLHandler()).read();
 		allTweets.putAll(tweets);
 	}
+
+	static Map<Long, Set<String>> USER_NAME_MAP = new HashMap<>();
 
 	private static class TweetXMLHandler implements LineHandler<Map<Long, List<Tweet>>> {
 
@@ -120,11 +136,15 @@ public class NewDatasetLoader {
 		}
 
 		@Override
-		public boolean readLine(int index, String line) {
+		public boolean readLine(int a, String line) {
 			Matcher matcher = TWEET_COLLECTION_START.matcher(line);
 			if (matcher.find()) {
 				if (currentId != -1) {
-					tweets.put(currentId, tweetList);
+					if (!tweets.containsKey(currentId)) {
+						tweets.put(currentId, tweetList);
+					} else {
+						tweets.get(currentId).addAll(tweetList);
+					}
 				}
 				currentId = Long.parseLong(matcher.group(1));
 				builder.setLength(0);
@@ -132,11 +152,22 @@ public class NewDatasetLoader {
 			} else {
 				if (TWEET_START.matcher(line).find()) {
 					t = new Tweet();
-					builder.append(line);
+					builder.append(line).append(" ");
 				} else if (TWEET_END.matcher(line).find()) {
 					Matcher m = CONTENT_MATCHER.matcher(builder.toString());
 					if (m.find()) {
-						t.setText(m.group(1));
+						String content = m.group(1);
+						int index = content.indexOf(":");
+						if (index != -1) {
+							String username = content.substring(0, index);
+							if (!USER_NAME_MAP.containsKey(currentId)) {
+								USER_NAME_MAP.put(currentId, new HashSet<String>());
+							}
+							USER_NAME_MAP.get(currentId).add(username);
+							content = content.substring(index + 2).trim();
+						}
+						t.setText(content);
+
 						tweetList.add(t);
 						builder.setLength(0);
 					} else {
@@ -152,7 +183,11 @@ public class NewDatasetLoader {
 
 		@Override
 		public Map<Long, List<Tweet>> getResult() {
-			tweets.put(currentId, tweetList);
+			if (!tweets.containsKey(currentId)) {
+				tweets.put(currentId, tweetList);
+			} else {
+				tweets.get(currentId).addAll(tweetList);
+			}
 			return tweets;
 		}
 

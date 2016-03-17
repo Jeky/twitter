@@ -1,5 +1,6 @@
 package twitter.analysis.testors;
 
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,6 +64,21 @@ public class BasicStatisticTestor extends Testor {
 
 		List<CounterEntry<Integer>> sortedResult = distribution.getSortedResult();
 		PrintWriter writer = new PrintWriter(TEST_PATH + "token-distribution.txt");
+		for (CounterEntry<Integer> ce : sortedResult) {
+			writer.println(ce.getKey() + "\t" + ce.getValue());
+		}
+		writer.close();
+	}
+	
+	public static void printFrequency(Counter<?> counter, String outputFilename) throws Exception{
+		Logger.info("Collect Distribution...");
+		Counter<Integer> distribution = new Counter<>();
+		for (Entry<?, Integer> e : counter.entrySet()) {
+			distribution.put(e.getValue());
+		}
+
+		List<CounterEntry<Integer>> sortedResult = distribution.getSortedResult();
+		PrintWriter writer = new PrintWriter(outputFilename);
 		for (CounterEntry<Integer> ce : sortedResult) {
 			writer.println(ce.getKey() + "\t" + ce.getValue());
 		}
